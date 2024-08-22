@@ -1,0 +1,180 @@
+{% extends "master_layout.html" %}
+
+{% load static %}
+{% load bootstrap5 %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    Home
+{% endblock%}
+
+{% block content %}
+
+        <!-- Hero section starts  -->
+
+        <div id="hero" class="carousel slide">
+            <div class="carousel-indicators">
+              <button
+                type="button"
+                data-bs-target="#hero"
+                data-bs-slide-to="0"
+                class="active"
+                aria-current="true"
+                aria-label="Slide 1"
+              ></button>
+              <button
+                type="button"
+                data-bs-target="#hero"
+                data-bs-slide-to="1"
+                aria-label="Slide 2"
+              ></button>
+              <button
+                type="button"
+                data-bs-target="#hero"
+                data-bs-slide-to="2"
+                aria-label="Slide 3"
+              ></button>
+            </div>
+            <div class="carousel-inner">
+              <div class="carousel-item active">
+                <img
+                  src="{% static 'images/ice-cream-1.jpg' %}"
+                  class="d-block w-100"
+                  alt="Ice cream 1"
+                />
+                <div class="carousel-caption d-none d-sm-block bg-dark">
+                  <h2>Ice cream 1</h2>
+                  <p>Some representative placeholder content for the first slide.</p>
+                </div>
+              </div>
+              <div class="carousel-item">
+                <img
+                  src="{% static 'images/ice-cream-2.jpg' %}"
+                  class="d-block w-100"
+                  alt="Ice cream 2"
+                />
+                <div class="carousel-caption d-none d-sm-block bg-dark">
+                  <h2>Ice cream 2</h2>
+                  <p>Some representative placeholder content for the first slide.</p>
+                </div>
+              </div>
+              <div class="carousel-item">
+                <img
+                  src="{% static 'images/ice-cream-3.jpg' %}"
+                  class="d-block w-100"
+                  alt="Ice cream 3"
+                />
+                <div class="carousel-caption d-none d-sm-block bg-dark">
+                  <h2>Ice cream 3</h2>
+                  <p>Some representative placeholder content for the first slide.</p>
+                </div>
+              </div>
+            </div>
+            <button
+              class="carousel-control-prev"
+              type="button"
+              data-bs-target="#hero"
+              data-bs-slide="prev"
+            >
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button
+              class="carousel-control-next"
+              type="button"
+              data-bs-target="#hero"
+              data-bs-slide="next"
+            >
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+      
+          <!-- Hero section ends  -->
+
+            <!-- Icream products starts  -->
+            <div class="container my-5">
+                <h2 class="text-center mb-4">Our Products</h2>
+        
+                <div id="products" class="row">
+                    {% for product in products %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <img class="card-img-top" src="/media/{{product.image_url}}" alt="{{product.name}}">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{product.name}}</h5>
+                                    <p class="card-text">{{product.description}}</p>
+                                    <p class="card-text">{{product.price}}</p>
+                                    <div class="d-flex buttonGroup-1 justify-content-end gap-3">
+                                        <a class="btn btn-primary" href="#">View details</a>
+                                        <a class="btn btn-info" href="#">Add to cart</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+      <!-- Icream products ends  -->
+
+      <!-- Enquiry form starts  -->
+    <div class="container-fluid mt-5 bg-primary-subtle p-5">
+        <h2 class="text-center mb-4">Enquiry Form</h2>
+        <div id="successMessage"></div>
+        <form class="container" method="POST">
+          {% csrf_token %}
+          {% bootstrap_form_errors enquiry %}
+          {% if messages %}
+            <div class="alert alert-success" role="alert">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+          <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ enquiry.first_name|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                {{ enquiry.last_name|as_crispy_field }}
+            </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                {{ enquiry.email|as_crispy_field }}
+            </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                {{ enquiry.mobile|as_crispy_field }}
+            </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                  {{ enquiry.product|as_crispy_field }}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                {{ enquiry.message|as_crispy_field }}
+            </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end my-2">
+            {% buttons reset="Reset"  submit="Enquire" button_type="submit" button_class="btn-primary" %}{% endbuttons%}
+          </div>
+        </form>
+      </div>
+      <!-- Enquiry form ends  -->
+
+{% endblock %}
