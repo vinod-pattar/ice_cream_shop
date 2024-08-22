@@ -1,8 +1,6 @@
 # Build a e-commerce site for selling ice creams
 
-/**
-*   Customer requirements
-**/
+## Customer requirements
 - Products list page
 - Products detail page
 - Cart management (add to cart, update quantity and remove from cart)
@@ -12,9 +10,7 @@
 - Customer login
 - Order history and its status
 
-/**
-*   Admin requirements
-**/
+## Admin requirements
 - Option to create/update/delete ice cream products with details (pricing , etc)
 - View Customers
 - View customer orders
