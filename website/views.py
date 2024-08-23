@@ -15,6 +15,10 @@ from .models import Product
 from .forms import EnquiryForm
 from django.contrib import messages
 
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
 # Create your views here.
 def home(request):
     if request.method == "POST":
@@ -37,6 +41,24 @@ def contact(request):
 
 def ice_creams(request):
     return render(request, "ice_creams.html")
+
+def confirm_enquiry_email(enquiry):
+    subject = 'Your Product Enquiry Confirmation'
+    from_email = 'vinod@example.com'
+    to = enquiry.email
+
+    # Render the HTML email template
+    html_content = render_to_string('emails/confirm_enquiry.html', {
+        'enquiry': enquiry,
+    })
+    text_content = strip_tags(html_content)  # Fallback to plain text content
+
+    # Create the email
+    email = EmailMultiAlternatives(subject, text_content, from_email, [to])
+    email.attach_alternative(html_content, "text/html")
+
+    # Send the email
+    email.send()
 
 # def file_iterator(file_name, chunk_size=8192):
 #     with open(file_name, 'rb') as f:

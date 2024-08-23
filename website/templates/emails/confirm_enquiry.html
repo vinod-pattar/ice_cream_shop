@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Enquiry Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #007bff;
+        }
+        .product-details {
+            margin-bottom: 20px;
+        }
+        .product-details p {
+            margin: 5px 0;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Thank You for Your Enquiry, {{ enquiry.first_name }}!</h1>
+        <p>We have received your enquiry about the following product:</p>
+
+        <div class="product-details">
+            <h2>{{ product.name }}</h2>
+            <p><strong>Brand:</strong> {{ enquiry.product.brand }}</p>
+            <p><strong>Category:</strong> {{ enquiry.product.category }}</p>
+            <p><strong>Price:</strong> ${{ enquiry.product.price }}</p>
+        </div>
+
+        <p>Our team will review your enquiry and get back to you as soon as possible. If you have any further questions, feel free to reply to this email.</p>
+
+        <p>Thank you for choosing our service!</p>
+
+        <div class="footer">
+            <p>Best regards,<br>Ice Cream Shop</p>
+            <p><a href="mailto:support@example.com">support@example.com</a></p>
+        </div>
+    </div>
+</body>
+</html>
