@@ -7,6 +7,7 @@ from .views import confirm_enquiry_email
 def EnquiryEmailSender(sender, instance, created, **kwargs):
     if created:
         confirm_enquiry_email(instance)
+        admin_confirm_email(instance)
         # Send enquiry email to the admin 
 
 
