@@ -18,6 +18,7 @@ from django.contrib import messages
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.core.paginator import Paginator
 
 # Create your views here.
 def home(request):
@@ -32,6 +33,17 @@ def home(request):
         form = EnquiryForm()
     return render(request, "home.html", {"products": products, 'enquiry': form})
 
+def ice_creams(request):
+    products = Product.objects.all()
+
+    # Pagination settings
+    paginator = Paginator(products, 2)  # Show 10 products per page
+    page_number = request.GET.get('page')
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "ice_creams.html", {'page_obj': page_obj})
+
 
 def about(request):
     return render(request, "about.html")
@@ -39,17 +51,14 @@ def about(request):
 def contact(request):
     return render(request, "contact.html")
 
-def ice_creams(request):
-    return render(request, "ice_creams.html")
-
-def confirm_enquiry_email(enquiry):
+def confirm_enquiry_email(instance):
     subject = 'Your Product Enquiry Confirmation'
     from_email = 'vinod@example.com'
-    to = enquiry.email
+    to = instance.email
 
     # Render the HTML email template
     html_content = render_to_string('emails/confirm_enquiry.html', {
-        'enquiry': enquiry,
+        'enquiry': instance,
     })
     text_content = strip_tags(html_content)  # Fallback to plain text content
 

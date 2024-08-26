@@ -11,6 +11,6 @@ class EnquiryForm(forms.ModelForm):
 
     product = forms.ModelChoiceField(
         queryset=Product.objects.filter(),
-        empty_label='Product',
+        empty_label='Select Product',
         to_field_name='id'
     )

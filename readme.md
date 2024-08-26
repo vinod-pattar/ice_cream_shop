@@ -9,6 +9,7 @@
 - Customer registration
 - Customer login
 - Order history and its status
+- Customer can make enquiries with regards to products
 
 ## Admin requirements
 - Option to create/update/delete ice cream products with details (pricing , etc)

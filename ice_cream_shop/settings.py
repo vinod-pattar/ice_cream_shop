@@ -156,6 +156,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+BOOTSTRAP5 = {
+    "pagination_first_label": "«",
+    "pagination_last_label": "»",
+    "pagination_previous_label": "‹",
+    "pagination_next_label": "›",
+    "pagination_alignment": "justify-content-center",
+}
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
