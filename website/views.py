@@ -19,6 +19,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.paginator import Paginator
+from pyairtable import Api
 
 # Create your views here.
 def home(request):
@@ -37,18 +38,28 @@ def ice_creams(request):
     products = Product.objects.all()
 
     # Pagination settings
-    paginator = Paginator(products, 2)  # Show 10 products per page
-    page_number = request.GET.get('page')
+    paginator = Paginator(products, 6)  # Show 10 products per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     return render(request, "ice_creams.html", {'page_obj': page_obj})
 
 
+def ice_cream_detail(request, ice_cream_id):
+    ice_cream = Product.objects.get(id=ice_cream_id)
+    return render(request, "ice_cream_detail.html", {'ice_cream': ice_cream})
+
+
 def about(request):
     return render(request, "about.html")
 
 def contact(request):
+    if request.method == "POST":
+        api = Api(os.environ['AIRTABLE_API_KEY'])
+        table = api.table('appdocnsZazAsunAA', 'tblGXz4VVlflM0VdG')
+        table.create({'Name': request.POST.get('name'), 'Email': request.POST.get('email'), 'Message': request.POST.get('message')})
+        messages.success(request, 'Your message has been submitted successfully!')
+        return redirect('contact')
     return render(request, "contact.html")
 
 def confirm_enquiry_email(instance):

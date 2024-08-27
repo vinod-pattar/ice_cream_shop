@@ -1,0 +1,23 @@
+{% extends "master_layout.html" %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-6">
+            {% if ice_cream.image_url %}
+                <img src="/media/{{ ice_cream.image_url }}" class="img-fluid" alt="{{ ice_cream.name }}">
+            {% else %}
+                <img src="https://via.placeholder.com/300" class="img-fluid" alt="No image available">
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <h1>{{ ice_cream.name }}</h1>
+            <p>{{ ice_cream.description }}</p>
+            <p><strong>Price:</strong> ₹{{ ice_cream.price }}</p>
+            <p><strong>Brand:</strong> {{ ice_cream.brand }}</p>
+            <p><strong>Category:</strong> {{ ice_cream.category }}</p>
+            <a href="#" class="btn btn-primary">Add to Cart</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
