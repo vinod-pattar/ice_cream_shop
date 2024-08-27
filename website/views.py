@@ -112,7 +112,7 @@ def admin_confirm_email(enquiry):
     to = "prajwal@example.com"
 
     # Render the HTML email template
-    html_content = render_to_string('emails/admin.html', {
+    html_content = render_to_string('emails/admin_confirm_enquiry.html', {
         'enquiry': enquiry,
     })
     text_content = strip_tags(html_content)  # Fallback to plain text content
