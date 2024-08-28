@@ -20,6 +20,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.paginator import Paginator
 from pyairtable import Api
+import requests
 
 # Create your views here.
 def home(request):
@@ -55,11 +56,38 @@ def about(request):
 
 def contact(request):
     if request.method == "POST":
-        api = Api(os.environ['AIRTABLE_API_KEY'])
-        table = api.table('appdocnsZazAsunAA', 'tblGXz4VVlflM0VdG')
-        table.create({'Name': request.POST.get('name'), 'Email': request.POST.get('email'), 'Message': request.POST.get('message')})
-        messages.success(request, 'Your message has been submitted successfully!')
-        return redirect('contact')
+        # Add code to store form data to the store 
+
+        
+        # api = Api(os.environ['AIRTABLE_API_KEY'])
+        # table = api.table('appdocnsZazAsunAA', 'tblGXz4VVlflM0VdG')
+        # table.create({'Name': request.POST.get('name'), 'Email': request.POST.get('email'), 'Message': request.POST.get('message')})
+        url = "https://api.airtable.com/v0/appdocnsZazAsunAA/Table%201"
+        data = {
+            "records": [
+                {
+                    "fields": {
+                        "Name": request.POST.get('name'),
+                        "Email": request.POST.get('email'),
+                        "Message": request.POST.get('message')
+                    }
+                }
+            ]
+        }
+        headers = {
+            "Authorization": f"Bearer {os.environ['AIRTABLE_API_KEY']}",
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(url, json=data, headers=headers)
+
+        if response.status_code == 200:
+            messages.success(request, 'Your message has been submitted successfully!')
+            return redirect('contact')
+        else:
+            messages.error(request, 'Something went wrong. Please try again later.')
+            return redirect('contact')
+        
     return render(request, "contact.html")
 
 def confirm_enquiry_email(instance):
