@@ -50,9 +50,6 @@ class Product(models.Model):
         return self.name
     
 
-from django.db import models
-from django.contrib.auth.models import User
-
 class Order(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),

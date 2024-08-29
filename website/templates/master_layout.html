@@ -10,12 +10,12 @@
         <link href="{% static 'css/app.css' %}" rel="stylesheet" />
     </head>
     <body>
-        {% include 'navigation.html' %}
+        {% include 'includes/navigation.html' %}
 
         {% block content %}
         {% endblock %}
 
-        {% include 'footer.html'%}
+        {% include 'includes/footer.html'%}
         {% bootstrap_javascript %}
     </body>
 </html>

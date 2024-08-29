@@ -1,0 +1,66 @@
+<!-- Navigation starts -->
+<nav class="navbar navbar-expand-lg bg-info bg-opacity-75">
+    <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'home' %}">Ice Creams!!</a>
+    <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+    >
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link {% if request.path == '/' %}active{% endif %}" aria-current="page" href="{% url 'home' %}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link  {% if request.path == '/ice-creams/' %}active{% endif %}" href="{% url 'ice_creams' %}">Ice Creams</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link  {% if request.path == '/about/' %}active{% endif %}" href="{% url 'about' %}">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link  {% if request.path == '/contact/' %}active{% endif %}" href="{% url 'contact' %}">Contact</a>
+            </li>
+        </ul>
+        {% if request.user.is_authenticated %}
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ request.user.username }}
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Profile</a></li>
+              <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+          </div>
+        {% else %}
+
+        <ul class="nav">
+            <li class="nav-item me-2">
+                <a class="nav-link btn btn-light" href="{% url 'login' %}">Login</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link btn btn-light" href="{% url 'register' %}">Register</a>
+            </li>
+        </ul>
+        {% endif %}
+
+        {% comment %} <form class="d-flex" role="search">
+        <input
+            class="form-control me-2"
+            type="search"
+            placeholder="Search"
+            aria-label="Search"
+        />
+        <button class="btn btn-light" type="submit">Search</button>
+        </form> {% endcomment %}
+    </div>
+    </div>
+</nav>
+<!-- Navigation ends  -->

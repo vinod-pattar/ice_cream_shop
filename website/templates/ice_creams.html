@@ -17,6 +17,7 @@
                         <p class="card-text">{{ ice_cream.description }}</p>
                         <p class="card-text"><strong>₹{{ ice_cream.price }}</strong></p>
                         <a href="{% url 'ice_cream_detail' ice_cream.id %}" class="btn btn-primary">View Details</a>
+                        <a class="btn btn-info" href="#">Add to cart</a>
                     </div>
                 </div>
             </div>

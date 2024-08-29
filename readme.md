@@ -25,6 +25,8 @@
 ## Database
 - Products (Done)
 - Users (Done)
+- Profiles (Done)
+- Adresses (Done)
 - Orders (Done)
 - OrderItems (Done)
 - Transactions (Done)
@@ -85,6 +87,18 @@
 - createdAt
 - updatedAt
 
+### Profiles
+- phone_number
+- date_of_birth
+
+### Address
+- building_no
+- street_address_1
+- Street_address_2
+- area
+- City
+- PIN
+
 ### Enquiry
 - id
 - userId (foreign key to Users table)
@@ -106,3 +120,5 @@
 - One-to-one between Transactions and Orders (one transaction can be for one orders)
 - One-to-many between Users and Enquiry (one user can have multiple enquiries)
 - Many-to-many between Products and Enquiry (one product can have multiple enquiries)
+- One-to-One between Users and Profile (One user can have one profile)
+- One-to-many between Users and Addresses (One User can have multiple address)

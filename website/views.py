@@ -21,6 +21,7 @@ from django.utils.html import strip_tags
 from django.core.paginator import Paginator
 from pyairtable import Api
 import requests
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def home(request):
@@ -49,7 +50,6 @@ def ice_creams(request):
 def ice_cream_detail(request, ice_cream_id):
     ice_cream = Product.objects.get(id=ice_cream_id)
     return render(request, "ice_cream_detail.html", {'ice_cream': ice_cream})
-
 
 def about(request):
     return render(request, "about.html")
