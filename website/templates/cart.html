@@ -1,0 +1,49 @@
+{% extends "master_layout.html" %}
+
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+    <h2 class="mb-4">Cart</h2>
+    {% if cart_items %}
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Ice cream</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ item.price }}</td>
+                    <td>₹{{ item.quantity|multiply:item.price }}</td>
+                    <td>
+                        <form method="post" action="{% url 'remove_from_cart' item.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="3" class="text-right"><strong>Grand Total:</strong></td>
+                    <td colspan="2"><strong>₹{{ grand_total }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            Your cart is currently empty.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

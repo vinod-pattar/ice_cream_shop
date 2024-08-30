@@ -16,7 +16,7 @@
             <p><strong>Price:</strong> ₹{{ ice_cream.price }}</p>
             <p><strong>Brand:</strong> {{ ice_cream.brand }}</p>
             <p><strong>Category:</strong> {{ ice_cream.category }}</p>
-            <a href="#" class="btn btn-primary">Add to Cart</a>
+            <a href="{% url 'add_to_cart' ice_cream.id %}" class="btn btn-primary">Add to Cart</a>
         </div>
     </div>
 </div>

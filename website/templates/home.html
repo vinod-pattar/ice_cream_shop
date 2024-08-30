@@ -104,10 +104,10 @@
                                 <div class="card-body">
                                     <h5 class="card-title">{{product.name}}</h5>
                                     <p class="card-text">{{product.description}}</p>
-                                    <p class="card-text">{{product.price}}</p>
+                                    <p class="card-text">₹{{product.price}}</p>
                                     <div class="d-flex buttonGroup-1 justify-content-end gap-3">
                                         <a href="{% url 'ice_cream_detail' product.id %}" class="btn btn-primary">View Details</a>
-                                        <a class="btn btn-info" href="#">Add to cart</a>
+                                        <a class="btn btn-info" href="{% url 'add_to_cart' product.id %}">Add to cart</a>
                                     </div>
                                 </div>
                             </div>

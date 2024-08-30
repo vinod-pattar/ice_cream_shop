@@ -11,7 +11,7 @@ import os
 from django.conf import settings
 from django.template import loader
 from django.urls import reverse
-from .models import Product
+from .models import Product, CartItem
 from .forms import EnquiryForm
 from django.contrib import messages
 
@@ -107,6 +107,36 @@ def confirm_enquiry_email(instance):
 
     # Send the email
     email.send()
+
+
+@login_required(login_url='login')
+def add_to_cart(request, ice_cream_id):
+    product = Product.objects.get(id=ice_cream_id)
+    cart_item, created = CartItem.objects.get_or_create(product=product, user=request.user)
+    
+    cart_item.price = product.price
+
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+    else:
+        cart_item.quantity = 1
+        cart_item.save()
+        
+    return redirect('cart')
+
+@login_required(login_url="login")
+def remove_from_cart(request, cart_item_id):
+    cart_item = CartItem.objects.get(id=cart_item_id, user=request.user)
+    cart_item.delete()
+    return redirect('cart')
+
+@login_required(login_url='login') 
+def cart_view(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    grand_total = sum(item.price * item.quantity for item in cart_items)
+    return render(request, "cart.html", {'cart_items': cart_items, 'grand_total': grand_total})
+
 
 # def file_iterator(file_name, chunk_size=8192):
 #     with open(file_name, 'rb') as f:
