@@ -1,15 +1,15 @@
 # Build a e-commerce site for selling ice creams
 
 ## Customer requirements
-- Products list page
-- Products detail page
+- Products list page (Done)
+- Products detail page (Done)
 - Cart management (add to cart, update quantity and remove from cart)
 - Buy option with payment gateway like stripe / razorpay
 - Delivery address management 
-- Customer registration
-- Customer login
+- Customer registration (Done)
+- Customer login (Done)
 - Order history and its status
-- Customer can make enquiries with regards to products
+- Customer can make enquiries with regards to products (Done)
 
 ## Admin requirements
 - Option to create/update/delete ice cream products with details (pricing , etc)

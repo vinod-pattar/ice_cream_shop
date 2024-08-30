@@ -9,8 +9,6 @@ def login_view(request):
     if request.user.is_authenticated:
         return redirect('home')  # Replace 'home' with your redirect URL
 
-    if request.method == 'GET':
-        return render(request, "login.html")
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
