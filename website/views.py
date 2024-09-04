@@ -220,6 +220,10 @@ def orders_list(request):
 
     return render(request, "orders_list.html", {'page_obj': page_obj})
 
+@login_required(login_url='login')
+def addresses(request):
+    addresses = Address.objects.filter(user=request.user).order_by('-id')
+    return render(request, "addresses.html", {'addresses': addresses})
 
 @login_required(login_url='login')
 def add_address(request):

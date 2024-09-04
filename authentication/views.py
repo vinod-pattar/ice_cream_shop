@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -45,9 +46,13 @@ def register_view(request):
             messages.success(request, 'Registration successful. Please log in.')
             return redirect('login')  # Replace with your login URL
     return render(request, "register.html")
-
+@login_required(login_url='login')
 def logout_view(request):
     # Call the logout function to log out the user
     logout(request)
     # Redirect to a specified page after logout, such as the home page
     return redirect('home')  # Replace 'home' with the name of your home view
+
+@login_required(login_url='login')
+def profile_view(request):
+    return render(request, "profile.html")
