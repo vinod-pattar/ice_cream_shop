@@ -12,7 +12,7 @@ from django.conf import settings
 from django.template import loader
 from django.urls import reverse
 from .models import Product, CartItem
-from .forms import EnquiryForm
+from .forms import EnquiryForm, AddressForm
 from django.contrib import messages
 
 from django.core.mail import EmailMultiAlternatives
@@ -22,6 +22,7 @@ from django.core.paginator import Paginator
 from pyairtable import Api
 import requests
 from django.contrib.auth.decorators import login_required
+from authentication.models import Address
 
 # Create your views here.
 def home(request):
@@ -126,9 +127,26 @@ def add_to_cart(request, ice_cream_id):
     return redirect('cart')
 
 @login_required(login_url="login")
-def remove_from_cart(request, cart_item_id):
-    cart_item = CartItem.objects.get(id=cart_item_id, user=request.user)
-    cart_item.delete()
+def update_cart(request):
+    if request.method == 'POST':
+        # Handle removing an item
+        if 'remove' in request.POST:
+            item_id = request.POST['remove']
+            # Logic to remove item from cart
+            cart_item = CartItem.objects.get(id=item_id, user=request.user)
+            cart_item.delete()
+
+        else:
+             # Handle updating quantities
+            for key, value in request.POST.items():
+                if key.startswith('quantity_'):
+                    item_id = key.split('_')[1]
+                    new_quantity = int(value)
+                    # Logic to update the quantity of the item in the cart
+                    cart_item = CartItem.objects.get(id=item_id, user=request.user)
+                    cart_item.quantity = new_quantity
+                    cart_item.save()
+
     return redirect('cart')
 
 @login_required(login_url='login') 
@@ -136,6 +154,64 @@ def cart_view(request):
     cart_items = CartItem.objects.filter(user=request.user)
     grand_total = sum(item.price * item.quantity for item in cart_items)
     return render(request, "cart.html", {'cart_items': cart_items, 'grand_total': grand_total})
+
+
+@login_required(login_url='login')
+def checkout(request):
+    if request.method == "POST":
+        action = request.POST.get('action')
+        address_id = request.POST.get('address')
+
+        if action == "cod":
+            # Handle Cash on Delivery
+            return HttpResponse("Cash on Delivery selected")
+
+        elif action == "pay_online":
+            # Handle Online Payment
+            return HttpResponse("Online Payment selected")
+        else:
+            return HttpResponse("Invalid action")
+        
+    addresses = Address.objects.filter(user=request.user).order_by('-id')
+    return render(request, "checkout.html", {'addresses': addresses})
+
+
+@login_required(login_url='login')
+def add_address(request):
+    if request.method == "POST":
+        form = AddressForm(request.POST)  # Pass the user_id to the form
+        print(form.errors)
+        print(form.is_valid())
+        print(form.cleaned_data)
+        if form.is_valid():
+            form.instance.user = request.user
+            form.save()
+            return redirect('checkout')
+        else:
+            print(form.errors)
+            
+    else:
+        form = AddressForm(initial={'user': request.user})
+    return render(request, "add_address.html", {'form': form} )
+
+@login_required(login_url='login')
+def edit_address(request, address_id):
+    address = Address.objects.get(id=address_id, user=request.user)
+    if request.method == "POST":
+        form = AddressForm(request.POST, instance=address)
+        if form.is_valid():
+            form.save()
+            return redirect('checkout')
+    else:
+        form = AddressForm(instance=address)
+    return render(request, "edit_address.html", {'form': form})
+
+
+@login_required(login_url='login')
+def delete_address(request, address_id):
+    address = Address.objects.get(id=address_id, user=request.user)
+    address.delete()
+    return redirect('checkout')
 
 
 # def file_iterator(file_name, chunk_size=8192):

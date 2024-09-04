@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from datetime import datetime
+from authentication.models import Address
 
 # Create your models here.
 
@@ -61,9 +62,15 @@ class Order(models.Model):
 
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name='orders', null=True)
+    currency = models.CharField(max_length=10, default='INR')
+    receipt = models.CharField(max_length=128, unique=True, editable=False, null=True, blank=True)
     total = models.FloatField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    order_id = models.CharField(max_length=50, unique=True, editable=False, null=False)
+    payment_status = models.CharField(max_length=20, default='pending')
+    order_id = models.CharField(max_length=128, unique=True, editable=False, null=False)
+    amount_paid = models.FloatField(default=0.0, blank=True, null=False)
+    amount_due = models.FloatField(default=0.0, blank=True, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

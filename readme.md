@@ -56,6 +56,11 @@
 ### Orders
 - id
 - userId (foreign key to Users table)
+- currency (INR)
+- receipt (unique string)
+- payment_status (default 'pending')
+- amount_paid (float)
+- amount_due (float)
 - total (float)
 - status (string)
 - createdAt
@@ -92,6 +97,7 @@
 - date_of_birth
 
 ### Address
+- userId (foreign key to Users table)
 - building_no
 - street_address_1
 - Street_address_2

@@ -5,13 +5,15 @@
 
 {% block content %}
 
-<div class="container mt-5 mb-5">
+<div class="container mt-5 mb-5" style="min-height: 50vh;">
     <h2 class="mb-4">Cart</h2>
     {% if cart_items %}
+    <form method="post" action="{% url 'update_cart' %}">
+        {% csrf_token %}
         <table class="table table-bordered">
             <thead class="thead-light">
                 <tr>
-                    <th scope="col">Ice cream</th>
+                    <th scope="col">Item</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Price</th>
                     <th scope="col">Total</th>
@@ -22,14 +24,14 @@
                 {% for item in cart_items %}
                 <tr>
                     <td>{{ item.product.name }}</td>
-                    <td>{{ item.quantity }}</td>
+                    <td>
+                        <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="1" class="form-control" style="width: 80px;">
+                    </td>
                     <td>₹{{ item.price }}</td>
                     <td>₹{{ item.quantity|multiply:item.price }}</td>
                     <td>
-                        <form method="post" action="{% url 'remove_from_cart' item.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                        </form>
+                        <button type="submit" name="update" value="{{ item.id }}" class="btn btn-primary btn-sm">Update</button>
+                        <button type="submit" name="remove" value="{{ item.id }}" class="btn btn-danger btn-sm">Remove</button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -39,6 +41,11 @@
                 </tr>
             </tbody>
         </table>
+    </form>
+    <!-- Proceed to Checkout Button -->
+    <div class="d-flex flex-row-reverse">
+        <a href="{% url 'checkout' %}" class="btn btn-success btn-lg mt-3">Proceed to Checkout</a>
+    </div>
     {% else %}
         <div class="alert alert-info" role="alert">
             Your cart is currently empty.

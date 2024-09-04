@@ -24,7 +24,7 @@ class CustomUserAdmin(UserAdmin):
     phone_number.short_description = 'Phone Number'
 
     # Customize list_display to show User and UserProfile fields
-    list_display = ('username', 'email', 'first_name', 'last_name', 'date_of_birth', 'phone_number')
+    list_display = ('id','username', 'email', 'first_name', 'last_name', 'date_of_birth', 'phone_number')
     list_select_related = ('userprofile',)  # Optimize query
 
 # Unregister the existing User admin and register the custom one

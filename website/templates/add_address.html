@@ -1,0 +1,88 @@
+{% extends "master_layout.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5" style="min-height: 50vh;">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-4">Add address</h2>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.user }} <!-- This field is hidden and prefilled with the user's ID -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form.building_no.label_tag }}
+                    {{ form.building_no }}
+                    {% if form.building_no.errors %}
+                        <div class="text-danger">
+                            {{ form.building_no.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.street_address_1.label_tag }}
+                    {{ form.street_address_1 }}
+                    {% if form.street_address_1.errors %}
+                        <div class="text-danger">
+                            {{ form.street_address_1.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.street_address_2.label_tag }}
+                    {{ form.street_address_2 }}
+                    {% if form.street_address_2.errors %}
+                        <div class="text-danger">
+                            {{ form.street_address_2.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form.area.label_tag }}
+                    {{ form.area }}
+                    {% if form.area.errors %}
+                        <div class="text-danger">
+                            {{ form.area.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.city.label_tag }}
+                    {{ form.city }}
+                    {% if form.city.errors %}
+                        <div class="text-danger">
+                            {{ form.city.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.pin.label_tag }}
+                    {{ form.pin }}
+                    {% if form.pin.errors %}
+                        <div class="text-danger">
+                            {{ form.pin.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger mt-3">
+                {% for error in form.non_field_errors %}
+                    {{ error }}<br>
+                {% endfor %}
+            </div>
+            {% endif %}
+        <div class="d-flex mt-2 justify-content-end align-items-center gap-2">
+            <a href="{% url 'checkout' %}" class="btn btn-secondary mt-3">Cancel</a>
+            <button type="submit" class="btn btn-primary mt-3">Save Address</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

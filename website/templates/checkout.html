@@ -1,0 +1,67 @@
+{% extends "master_layout.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5" style="min-height: 50vh;">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-4">Checkout</h2>
+    </div>
+    {% if addresses %}
+    <form method="post" action="{% url 'checkout' %}">
+        {% csrf_token %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Select</th>
+                        <th>Building No</th>
+                        <th>Street Address 1</th>
+                        <th>Street Address 2</th>
+                        <th>Area</th>
+                        <th>City</th>
+                        <th>PIN</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for address in addresses %}
+                    <tr>
+                        <td>
+                            <input type="radio" name="address" value="{{ address.id }}" required>
+                        </td>
+                        <td>{{ address.building_no }}</td>
+                        <td>{{ address.street_address_1 }}</td>
+                        <td>{{ address.street_address_2 }}</td>
+                        <td>{{ address.area }}</td>
+                        <td>{{ address.city }}</td>
+                        <td>{{ address.pin }}</td>
+                        <td>
+                            <a href="{% url 'edit_address' address.id %}" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+                            <a href="{% url 'delete_address' address.id %}" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i> Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p class="my-3">
+            <a href="{% url 'add_address' %}" class="btn btn-primary"><i class="bi bi-plus"></i> Add address</a>
+        </p>
+        <div class="p-4 d-flex gap-2 justify-content-center">
+            <button class="btn btn-primary" type="submit" name="action" value="cod"><i class="bi bi-cash"></i> Pay Cash on Delivery</button>
+            <button class="btn btn-success" type="submit" name="action" value="pay_online"><i class="bi bi-credit-card"></i> Pay Online</button>
+        </div>
+    </form>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            No delivery addresses available. Please add one.
+            <p>
+                <a href="{% url 'add_address' %}" class="btn btn-primary"><i class="bi bi-plus"></i> Add address</a>
+            </p>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

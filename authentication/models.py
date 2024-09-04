@@ -15,6 +15,7 @@ class UserProfile(models.Model):
 
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')
+    building_no = models.CharField(max_length=255, default="", null=True, blank=True)
     street_address_1 = models.CharField(max_length=255)
     street_address_2 = models.CharField(max_length=255)
     area = models.CharField(max_length=100)
