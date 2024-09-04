@@ -1,0 +1,91 @@
+{% extends "master_layout.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5" style="min-height: 50vh;">
+
+    <h2>Your Orders</h2>
+    
+    {% if page_obj %}
+        <table class="table table-bordered mt-3">
+            <thead class="thead-light">
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Payment Status</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in page_obj %}
+                <tr>
+                    <td>{{ order.order_id }}</td>
+                    <td>{{ order.created_at|date:"F j, Y, g:i a" }}</td>
+                    <td>{{ order.currency }} {{ order.total }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.payment_status }}</td>
+                    <td>
+                        <a href="{% url 'order_details' order.id %}" class="btn btn-info btn-sm">View Details</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No orders found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% else %}
+        <p class="text-center">You have no orders yet.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

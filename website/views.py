@@ -211,6 +211,15 @@ def order_details(request, order_id):
     order_items = OrderItem.objects.filter(order=order)
     return render(request, "order_details.html", {'order': order, 'order_items': order_items})
 
+@login_required(login_url='login')
+def orders_list(request):
+    orders = Order.objects.filter(user=request.user).order_by('-id')
+    paginator = Paginator(orders, 2)  # Show 10 products per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "orders_list.html", {'page_obj': page_obj})
+
 
 @login_required(login_url='login')
 def add_address(request):
