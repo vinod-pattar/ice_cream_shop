@@ -49,6 +49,9 @@
     {% else %}
         <div class="alert alert-info" role="alert">
             Your cart is currently empty.
+            <p class="p-2">
+                <a href="{% url 'ice_creams' %}" class="btn btn-primary">Shop some ice creams</a>
+            </p>
         </div>
     {% endif %}
 </div>

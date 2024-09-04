@@ -11,7 +11,7 @@ import os
 from django.conf import settings
 from django.template import loader
 from django.urls import reverse
-from .models import Product, CartItem
+from .models import Product, CartItem, Order, OrderItem
 from .forms import EnquiryForm, AddressForm
 from django.contrib import messages
 
@@ -23,6 +23,7 @@ from pyairtable import Api
 import requests
 from django.contrib.auth.decorators import login_required
 from authentication.models import Address
+import uuid
 
 # Create your views here.
 def home(request):
@@ -161,10 +162,38 @@ def checkout(request):
     if request.method == "POST":
         action = request.POST.get('action')
         address_id = request.POST.get('address')
+        address = Address.objects.get(id=address_id, user=request.user)
+
+        cart_items = CartItem.objects.filter(user=request.user)
+        grand_total = sum(item.price * item.quantity for item in cart_items)
 
         if action == "cod":
             # Handle Cash on Delivery
-            return HttpResponse("Cash on Delivery selected")
+            order = Order.objects.create(
+                user=request.user,
+                total=grand_total,
+                status='Pending',
+                address=address, 
+                currency='INR',
+                receipt='receipt_' + str(uuid.uuid4()),
+                payment_status="pending",
+                order_id="",
+                amount_paid=0.0,
+                amount_due=grand_total)
+            
+            OrderItem.objects.bulk_create([
+                OrderItem(
+                    order=order,
+                    user=request.user,
+                    product=item.product,
+                    quantity=item.quantity,
+                    price=item.price
+                ) for item in cart_items
+            ])
+
+            cart_items.delete()
+
+            return redirect('order_details', order_id=order.id)
 
         elif action == "pay_online":
             # Handle Online Payment
@@ -174,6 +203,13 @@ def checkout(request):
         
     addresses = Address.objects.filter(user=request.user).order_by('-id')
     return render(request, "checkout.html", {'addresses': addresses})
+
+
+@login_required(login_url="login")
+def order_details(request, order_id):
+    order = Order.objects.get(id=order_id, user=request.user)
+    order_items = OrderItem.objects.filter(order=order)
+    return render(request, "order_details.html", {'order': order, 'order_items': order_items})
 
 
 @login_required(login_url='login')
