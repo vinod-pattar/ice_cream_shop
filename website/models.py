@@ -69,6 +69,7 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     payment_status = models.CharField(max_length=20, default='pending')
     order_id = models.CharField(max_length=128, unique=True, editable=False, null=False)
+    razorpay_order_id = models.CharField(max_length=128, editable=False, null=False, blank=True, default="")
     amount_paid = models.FloatField(default=0.0, blank=True, null=False)
     amount_due = models.FloatField(default=0.0, blank=True, null=False)
     created_at = models.DateTimeField(auto_now_add=True)

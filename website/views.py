@@ -24,6 +24,9 @@ import requests
 from django.contrib.auth.decorators import login_required
 from authentication.models import Address
 import uuid
+import razorpay
+import secrets
+import string
 
 # Create your views here.
 def home(request):
@@ -156,6 +159,12 @@ def cart_view(request):
     grand_total = sum(item.price * item.quantity for item in cart_items)
     return render(request, "cart.html", {'cart_items': cart_items, 'grand_total': grand_total})
 
+def generate_unique_string(length=8):
+    # Define the characters to use (you can customize this)
+    characters = string.ascii_letters + string.digits  # A-Z, a-z, 0-9
+    # Generate a random string of the specified length
+    random_string = ''.join(secrets.choice(characters) for _ in range(length))
+    return random_string
 
 @login_required(login_url='login')
 def checkout(request):
@@ -167,42 +176,96 @@ def checkout(request):
         cart_items = CartItem.objects.filter(user=request.user)
         grand_total = sum(item.price * item.quantity for item in cart_items)
 
-        if action == "cod":
-            # Handle Cash on Delivery
-            order = Order.objects.create(
+        order = Order.objects.create(
                 user=request.user,
                 total=grand_total,
                 status='Pending',
                 address=address, 
                 currency='INR',
-                receipt='receipt_' + str(uuid.uuid4()),
-                payment_status="pending",
-                order_id="",
+                receipt='receipt_' + generate_unique_string(),
+                payment_status="Pending",
                 amount_paid=0.0,
                 amount_due=grand_total)
             
-            OrderItem.objects.bulk_create([
-                OrderItem(
-                    order=order,
-                    user=request.user,
-                    product=item.product,
-                    quantity=item.quantity,
-                    price=item.price
-                ) for item in cart_items
-            ])
+        OrderItem.objects.bulk_create([
+            OrderItem(
+                order=order,
+                user=request.user,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.price
+            ) for item in cart_items
+        ])
 
-            cart_items.delete()
+        cart_items.delete()
 
+        if action == "cod":
+            # Handle Cash on Delivery
             return redirect('order_details', order_id=order.id)
 
         elif action == "pay_online":
             # Handle Online Payment
-            return HttpResponse("Online Payment selected")
+            # Create razorpay order
+            client = razorpay.Client(auth=(os.environ['RAZORPAY_KEY'], os.environ['RAZORPAY_SECRET']))
+            razorpay_order = client.order.create({
+                "amount": grand_total * 100,
+                "currency":'INR',
+                "receipt": order.receipt,
+                "partial_payment": False,
+                "notes" : {
+                    "order_id": order.id,
+                    "user_id": request.user.id
+                    }
+                })
+            
+            # Transaction.objects.create(
+            #     user=request.user,
+            #     order=order,
+            #     transaction_id=razorpay_order['id'],
+            #     amount=grand_total,
+            #     currency='INR',
+            #     status='Pending'
+            #     )
+            order.razorpay_order_id = razorpay_order['id']
+            order.save()
+
+
+            return redirect('payment', order_id=order.id)
         else:
             return HttpResponse("Invalid action")
         
     addresses = Address.objects.filter(user=request.user).order_by('-id')
     return render(request, "checkout.html", {'addresses': addresses})
+
+@login_required(login_url='login')
+def payment(request, order_id):
+    order = Order.objects.get(id=order_id, user=request.user)
+    return render(request, "payment.html", {'order': order})
+
+@login_required(login_url='login')
+def verify_payment(request):
+    if request.method == "POST":
+        order_id = request.POST.get('order_id')
+        razorpay_payment_id = request.POST.get('razorpay_payment_id')
+        razorpay_signature = request.POST.get('razorpay_signature')
+
+        order = Order.objects.get(id=order_id, user=request.user)
+        client = razorpay.Client(auth=(os.environ['RAZORPAY_KEY'], os.environ['RAZORPAY_SECRET']))
+        try:
+            client.utility.verify_payment_signature({
+                'razorpay_order_id': order.razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature': razorpay_signature
+            })
+            order.payment_status = 'Success'
+            order.save()
+            return redirect('order_details', order_id=order.id)
+        except Exception as e:
+            order.payment_status = 'Failed'
+            order.save()
+            return HttpResponse("Payment Failed")
+    else:
+        return HttpResponse("Invalid Request")
 
 
 @login_required(login_url="login")
