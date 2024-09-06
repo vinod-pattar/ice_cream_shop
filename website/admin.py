@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Order, OrderItem, Transaction, CartItem, Enquiry
+from .models import Product, Order, OrderItem, CartItem, Enquiry
 
 
 # Register your models here.
@@ -38,11 +38,30 @@ admin.site.register(Product, ProductAdmin)
 # End of Product
 
 
+# Start of OrderItem
+class OrderItemAdmin(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+    can_delete = False
+    can_add = False
+    readonly_fields = ('id', 'user', 'product', 'quantity', 'price', 'order')
+
+# End of OrderItem
+
 # Start of Order
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('order_id', 'user', 'total', 'created_at', 'status')
+    list_display = ('id', 'order_id', 'user', 'total', 'created_at', 'status')
     list_filter = ('status', 'created_at', 'user')
+    search_fields = ['order_id', 'user__username', 'user__email']
+    inlines = [OrderItemAdmin]
+
+    def get_readonly_fields(self, request, obj=None):
+        """Make fields read-only based on condition."""
+        if obj and obj.status == 'delivered' or obj and obj.status == 'canceled' or obj and obj.status == 'refunded':
+            # Make all fields read-only when status is 'completed' or 'cancelled' or 'refunded'
+            return [field.name for field in self.model._meta.fields]
+        return []
 
     def has_add_permission(self, request):
         # Disable add permission
@@ -63,59 +82,31 @@ admin.site.register(Order, OrderAdmin)
 # End of Order
 
 
-# Start of OrderItem
-class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ('id', 'product', 'quantity', 'price', 'order')
-    list_filter = ('order',)
-
-    def has_add_permission(self, request):
-        # Disable add permission
-        return False
-    
-    def has_change_permission(self, request):
-        # Disable change permission
-        return False
-
-    def get_actions(self, request):
-        # Disable delete action
-        actions = super(OrderItemAdmin, self).get_actions(request)
-        if 'delete_selected' in actions:
-            del actions['delete_selected']
-        return actions
-
-    def has_delete_permission(self, request, obj=None):
-        # Disable delete permission
-        return False
-
-admin.site.register(OrderItem, OrderItemAdmin)
-
-# End of OrderItem
-
 # Start of Transaction
-class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'order', 'user', 'amount', 'created_at', 'status')
-    list_filter = ('status', 'amount', 'user')
+# class TransactionAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'order', 'user', 'amount', 'created_at', 'status')
+#     list_filter = ('status', 'amount', 'user')
 
-    def has_add_permission(self, request):
-        # Disable add permission
-        return False
+#     def has_add_permission(self, request):
+#         # Disable add permission
+#         return False
     
-    def has_change_permission(self, request):
-        # Disable change permission
-        return False
+#     def has_change_permission(self, request):
+#         # Disable change permission
+#         return False
 
-    def get_actions(self, request):
-        # Disable delete action
-        actions = super(TransactionAdmin, self).get_actions(request)
-        if 'delete_selected' in actions:
-            del actions['delete_selected']
-        return actions
+#     def get_actions(self, request):
+#         # Disable delete action
+#         actions = super(TransactionAdmin, self).get_actions(request)
+#         if 'delete_selected' in actions:
+#             del actions['delete_selected']
+#         return actions
 
-    def has_delete_permission(self, request, obj=None):
-        # Disable delete permission
-        return False
+#     def has_delete_permission(self, request, obj=None):
+#         # Disable delete permission
+#         return False
     
-admin.site.register(Transaction, TransactionAdmin)
+# admin.site.register(Transaction, TransactionAdmin)
 
 # End of Transaction
 
@@ -124,13 +115,13 @@ class CartItemAdmin(admin.ModelAdmin):
     list_display = ('id', 'product', 'quantity', 'price', 'user')
     list_filter = ('user', 'product')
 
-    def has_add_permission(self, request):
-        # Disable add permission
-        return False
+    # def has_add_permission(self, request):
+    #     # Disable add permission
+    #     return False
     
-    def has_change_permission(self, request):
-        # Disable change permission
-        return False
+    # def has_change_permission(self, request):
+    #     # Disable change permission
+    #     return False
 
     def get_actions(self, request):
         # Disable delete action

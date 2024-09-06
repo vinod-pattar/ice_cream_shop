@@ -1,5 +1,7 @@
-{% extends "master_layout.html" %} {% load static %} {% load env_vars %} {%
-block content %}
+{% extends "master_layout.html" %}
+{% load static %} 
+{% load env_vars %}
+{% block content %}
 
 <div class="container mt-5 mb-5" style="min-height: 50vh">
   <div class="d-flex justify-content-between align-items-center">
@@ -9,7 +11,7 @@ block content %}
     <h4>Order Details</h4>
     <p><strong>Order ID:</strong> {{ order.order_id }}</p>
     <p>
-      <strong>Order Date:</strong> {{ order.created_at|date:"F j, Y, g:i a" }}
+      <strong>Order Date:</strong> {{ order.created_at|date:"F j, Y, g:i A" }}
     </p>
     <p><strong>Address:</strong> {{ order.address }}</p>
     <p><strong>Currency:</strong> {{ order.currency }}</p>
@@ -21,7 +23,18 @@ block content %}
     <p>
       <strong>Amount Due:</strong> {{ order.currency }} {{ order.amount_due }}
     </p>
+    <form action="{% url 'verify_payment' %}" method="post" id="form">
+      {% csrf_token %}
+      <input type="hidden" id="order_id" name="order_id" value="{{ order.id }}">
+      <input type="hidden" id="razorpay_order_id" name="razorpay_order_id" value="">
+      <input type="hidden" id="razorpay_payment_id" name="razorpay_payment_id" value="">
+      <input type="hidden" id="razorpay_signature" name="razorpay_signature" value="">
+      <button type="submit" class="d-none">Make Payment</button>
+    </form>
 
+    <form action="{% url 'cancel_order' order.id %}">
+      <button type="submit" class="btn btn-danger">Cancel Order</button>
+    </form>
     <button id="rzp-button" class="btn btn-primary">Make Payment</button>
   </div>
 </div>
@@ -41,60 +54,28 @@ block content %}
 
     handler: function (response) {
       console.log(response);
-      alert(response.razorpay_payment_id);
+      form = document.getElementById("form");
+      const razorpay_payment_id = document.getElementById("razorpay_payment_id");
+      const razorpay_order_id = document.getElementById("razorpay_order_id");
+      const razorpay_signature = document.getElementById("razorpay_signature");
 
-      form = document.createElement("form");
+      razorpay_payment_id.value = response.razorpay_payment_id;
+      razorpay_order_id.value = response.razorpay_order_id;
+      razorpay_signature.value = response.razorpay_signature;
 
-      // Set the form attributes
-      form.method = "POST"; // HTTP method to use
-      form.action = "{% url 'verify_payment' %}"; // The endpoint to which the data will be sent
-
-      const field0 = document.createElement("input");
-      field0.type = "hidden";
-      field0.name = "csrfmiddlewaretoken";
-      field0.value = "{% csrf_token %}"
-
-      // Add input fields to the form with data
-      const field1 = document.createElement("input");
-      field1.type = "hidden";
-      field1.name = "razorpay_order_id"; // The name of the form field
-      field1.value = response.razorpay_order_id; // The value to submit
-
-      const field2 = document.createElement("input");
-      field2.type = "hidden";
-      field2.name = "razorpay_payment_id";
-      field2.value = response.razorpay_payment_id;
-
-      const field3 = document.createElement("input");
-      field3.type = "hidden";
-      field3.name = "razorpay_signature";
-      field3.value = response.razorpay_signature;
-
-      // Append the input fields to the form
-      form.appendChild(field1);
-      form.appendChild(field2);
-      form.appendChild(field3);
-
-      // Append the form to the document body
-      document.body.appendChild(form);
-
-      // Automatically submit the form
       form.submit();
     },
     modal: {
       ondismiss: function () {
         if (confirm("Are you sure, you want to close the form?")) {
-          txt = "You pressed OK!";
-          console.log("Checkout form closed by the user");
-        } else {
-          txt = "You pressed Cancel!";
-          console.log("Complete the Payment");
+          window.location.href = "{% url 'cancel_order' order.id %}";
         }
       },
     },
   };
 
   var rzp1 = new Razorpay(options);
+  rzp1.open(); // auto launch payment modal
   document.getElementById("rzp-button").onclick = function (e) {
     rzp1.open();
     e.preventDefault();

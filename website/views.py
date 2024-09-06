@@ -179,7 +179,7 @@ def checkout(request):
         order = Order.objects.create(
                 user=request.user,
                 total=grand_total,
-                status='Pending',
+                status='pending',
                 address=address, 
                 currency='INR',
                 receipt='receipt_' + generate_unique_string(),
@@ -239,7 +239,9 @@ def checkout(request):
 
 @login_required(login_url='login')
 def payment(request, order_id):
-    order = Order.objects.get(id=order_id, user=request.user)
+    order = Order.objects.get(id=order_id, user=request.user,)
+    if order.payment_status == "Paid" or order.status == "Canceled":
+        return redirect('order_details', order_id=order.id)
     return render(request, "payment.html", {'order': order})
 
 @login_required(login_url='login')
@@ -257,7 +259,9 @@ def verify_payment(request):
                 'razorpay_payment_id': razorpay_payment_id,
                 'razorpay_signature': razorpay_signature
             })
-            order.payment_status = 'Success'
+            order.payment_status = 'Paid'
+            order.amount_paid = order.total
+            order.amount_due = 0.0
             order.save()
             return redirect('order_details', order_id=order.id)
         except Exception as e:
@@ -274,10 +278,18 @@ def order_details(request, order_id):
     order_items = OrderItem.objects.filter(order=order)
     return render(request, "order_details.html", {'order': order, 'order_items': order_items})
 
+@login_required(login_url="login")
+def cancel_order(request, order_id):
+    order = Order.objects.get(id=order_id, user=request.user)
+    order.status = 'canceled'
+    order.payment_status = 'canceled'
+    order.save()
+    return redirect('orders_list')
+
 @login_required(login_url='login')
 def orders_list(request):
     orders = Order.objects.filter(user=request.user).order_by('-id')
-    paginator = Paginator(orders, 2)  # Show 10 products per page
+    paginator = Paginator(orders, 6)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

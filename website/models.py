@@ -99,34 +99,34 @@ class OrderItem(models.Model):
         return f"OrderItem {self.id}: {self.product.name} x {self.quantity} = {self.price * self.quantity}"
     
 
-class Transaction(models.Model):
-    STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('completed', 'Completed'),
-        ('failed', 'Failed'),
-        ('refunded', 'Refunded'),
-    ]
+# class Transaction(models.Model):
+#     STATUS_CHOICES = [
+#         ('pending', 'Pending'),
+#         ('completed', 'Completed'),
+#         ('failed', 'Failed'),
+#         ('refunded', 'Refunded'),
+#     ]
 
-    PAYMENT_METHOD_CHOICES = [
-        ('credit_card', 'Credit Card'),
-        ('debit_card', 'Debit Card'),
-        ('paypal', 'PayPal'),
-        ('bank_transfer', 'Bank Transfer'),
-        ('cash_on_delivery', 'Cash on Delivery'),
-    ]
+#     PAYMENT_METHOD_CHOICES = [
+#         ('credit_card', 'Credit Card'),
+#         ('debit_card', 'Debit Card'),
+#         ('paypal', 'PayPal'),
+#         ('bank_transfer', 'Bank Transfer'),
+#         ('cash_on_delivery', 'Cash on Delivery'),
+#     ]
 
-    id = models.AutoField(primary_key=True)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transactions')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions')
-    amount = models.FloatField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES)
-    payment_id = models.CharField(max_length=100, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+#     id = models.AutoField(primary_key=True)
+#     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transactions')
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions')
+#     amount = models.FloatField()
+#     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+#     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES)
+#     payment_id = models.CharField(max_length=100, unique=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"Transaction details {self.payment_id} - {self.status} - Amount paid: {self.amount}"
+#     def __str__(self):
+#         return f"Transaction details {self.payment_id} - {self.status} - Amount paid: {self.amount}"
     
 
 class CartItem(models.Model):
