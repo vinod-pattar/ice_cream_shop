@@ -382,3 +382,22 @@ def page_not_found(request, exception):
 
 def server_error(request):
     return HttpResponse("500 Internal Server Error")
+
+
+def admin_confirm_email(enquiry):
+    subject = f'New enquiry from {enquiry.first_name}'
+    from_email = 'vinod@example.com'
+    to = "prajwal@example.com"
+
+    # Render the HTML email template
+    html_content = render_to_string('emails/admin_confirm_enquiry.html', {
+        'enquiry': enquiry,
+    })
+    text_content = strip_tags(html_content)  # Fallback to plain text content
+
+    # Create the email
+    email = EmailMultiAlternatives(subject, text_content, from_email, [to])
+    email.attach_alternative(html_content, "text/html")
+
+    # Send the email
+    email.send()
